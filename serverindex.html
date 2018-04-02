@@ -43,7 +43,7 @@
         border: none;
         text-align: center;
         font-size: 32px;
-        border-radius: 10px
+        border-radius: 10px{}
 
       }
 
@@ -57,14 +57,23 @@
 
       #scaleSelect {
         position: absolute;
-        top: 50%;
+        top: 60%;
         left: 30;
       }
 
       #transposeSelection {
         position: absolute;
-        top: 60%;
+        top: 50%;
         left: 30;
+      }
+
+
+
+      .scale-transpose {
+        height: 40px;
+        width: 80px;
+        font-size: 20px;
+        text-align: center
       }
 
       #showPage1 {
@@ -130,6 +139,8 @@
     <h1 id="title">
       Play it Yourself
     </h1>
+
+    <!-- PAGE 1 -->
     <div id="page1">
       <div width='device-width'>
         <p class="instructions">
@@ -140,6 +151,7 @@
       <button id="playStatus">Play</button>
     </div>
 
+    <!-- PAGE 2 -->
     <div id="page2">
       <div>
       <p class="instructions">
@@ -158,6 +170,8 @@
 
     </div>
 
+
+    <!-- PAGE 3 -->
     <div id="page3">
 
       <p class="instructions">
@@ -165,7 +179,7 @@
       </p>
 
       <div id="scaleSelect">
-        <select id="scale">
+        <select id="scale" class="scale-transpose">
           <option value="1">Major</option>
           <option value="2">Minor</option>
           <option value="3">Harmonic minor</option>
@@ -173,7 +187,7 @@
       </div>
 
       <div id="transposeSelection">
-        <select id="transpose">
+        <select id="transpose" class="scale-transpose">
           <option value="0">C</option>
           <option value="1">C#</option>
           <option value="2">D</option>
