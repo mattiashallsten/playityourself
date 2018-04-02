@@ -5,7 +5,7 @@ var app = express();
 var server = require('http').createServer(app);
 var io = require('socket.io')(server);
 
-const remote = '192.168.0.194';
+const remote = '127.0.0.1';
 const remotePort = 8000;
 
 var udpPort = new osc.UDPPort({
@@ -56,7 +56,12 @@ io.on('connection', function(client) {
         type: 'i',
         value: data
       }
-    }, remote, remotePort)
+    }, remote, remotePort);
+    if(data == 1) {
+      console.log('Playing!');
+    } else {
+      console.log('Stopped!')
+    }
   });
 
   client.on('freqRange', function(data) {
