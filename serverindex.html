@@ -1,0 +1,441 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <title></title>
+
+
+
+    <style>
+
+      canvas {
+        background-color: #ffe000
+      }
+
+      #title {
+        text-align: center;
+        font-family: Georgia, serif
+
+      }
+
+      #xyPad {
+
+        position: absolute;
+        top:0;
+        bottom: 0;
+        left: 0;
+        right: 0;
+        margin:auto;
+        /* background-color: #ffe000; */
+      }
+
+      #playStatus{
+        max-width: 100%;
+        border: solid black 2px;
+        position: absolute;
+        top: 80%;
+        left: 40%;
+        margin: auto;
+        /* background-color: #ffe000 */
+      }
+
+      #freqRange {
+        max-width: 50%
+      }
+
+
+
+
+
+      #scaleSelect {
+        position: absolute;
+        top: 50%;
+        left: 30;
+      }
+
+      #transposeSelection {
+        position: absolute;
+        top: 60%;
+        left: 30;
+      }
+
+      #showPage1 {
+        position: absolute;
+        top: 86%;
+        left:5%
+      }
+
+      #showPage2 {
+        position: absolute;
+        top: 90%;
+        left: 5%
+      }
+
+      #showPage3 {
+        position: absolute;
+        top: 94%;
+        left: 5%
+      }
+
+      .instructions {
+        text-align: center;
+        font-family: Georgia, serif
+
+      }
+
+
+
+
+
+      /* .slider {
+        width: 20%
+
+      } */
+
+      /* #page2 {
+        height: 70%;
+        width: 100%
+      }
+
+      .slider {
+        width: 40%;
+        height: 100%
+      } */
+
+
+
+      /* select {
+        height: 30%
+      } */
+
+
+
+
+
+
+    </style>
+
+  </head>
+  <body>
+    <h1 id="title">
+      Play it Yourself
+    </h1>
+    <div id="page1">
+      <div width='device-width'>
+        <p class="instructions">
+          Press play to start playing. Drag the ball in the yellow square to change pitch and tempo
+        </p>
+      </div>
+      <canvas id="xyPad" width="400%" height="400%"></canvas><br>
+      <canvas id="playStatus" width="100%" height="40%"></canvas><br>
+    </div>
+
+    <div id="page2">
+      <div>
+      <p class="instructions">
+        Change range of notes and the probability of a different rhythm.
+      </p>
+      </div>
+      <canvas
+        id="freqRange" class="slider"
+        height="400%%" width="180%">
+      </canvas>
+      <canvas
+        id="timeChance" class="slider"
+        height="400%" width="180%">
+      </canvas>
+
+
+    </div>
+
+    <!-- <form id="scale">
+      <input type="radio" name="scale" id="major" checked>Major<br>
+      <input type="radio" name="scale" id="minor">Minor<br>
+      <input type="radio" name="scale" id="minmaj">Harmonic minor
+    </form> -->
+
+    <div id="page3">
+
+      <p class="instructions">
+        Here you can select what scale and key that the piano is playing. Different keys can yield interesting results due to how the algorithmic sequencer is built.
+      </p>
+
+      <div id="scaleSelect">
+        <select id="scale">
+          <option value="1">Major</option>
+          <option value="2">Minor</option>
+          <option value="3">Harmonic minor</option>
+        </select>
+      </div>
+
+      <div id="transposeSelection">
+        <select id="transpose">
+          <option value="0">C</option>
+          <option value="1">C#</option>
+          <option value="2">D</option>
+          <option value="3">Eb</option>
+          <option value="4">E</option>
+          <option value="5">F</option>
+          <option value="6">F#</option>
+          <option value="7">G</option>
+          <option value="8">G#</option>
+          <option value="9">A</option>
+          <option value="10">A#</option>
+          <option value="11">B</option>
+        </select>
+      </div>
+    </div>
+
+    <button id="showPage1">Page 1</button>
+    <button id="showPage2">Page 2</button>
+    <button id="showPage3">Page 3</button>
+
+
+    <p id="post"></p>
+
+    <script src="/socket.io/socket.io.js"></script>
+    <!-- <script src="scripts.js"></script> -->
+
+    <script>
+
+      var socket = io.connect();
+
+      var page1 = document.getElementById('page1');
+      var page2 = document.getElementById('page2');
+      var page3 = document.getElementById('page3');
+
+      var playStatus = document.getElementById('playStatus');
+      var xyPad = document.getElementById('xyPad');
+      var freqRange = document.getElementById('freqRange');
+      var timeChance = document.getElementById('timeChance');
+      var post = document.getElementById('post');
+      //var scale = document.getElementById('scale');
+      var scale = document.getElementById('scale');
+      var transpose = document.getElementById('transpose');
+      var showPage1 = document.getElementById('showPage1');
+      var showPage2 = document.getElementById('showPage2');
+
+
+      var isPlaying = false;
+
+
+
+
+      showPage1.addEventListener('click', function() {
+        page1.style.display = 'block';
+        page2.style.display = 'none';
+        page3.style.display = 'none'
+      })
+
+      showPage2.addEventListener('click', function() {
+        page1.style.display = 'none';
+        page2.style.display = 'block';
+        page3.style.display = 'none'
+      })
+
+      showPage3.addEventListener('click', function() {
+        page1.style.display = 'none';
+        page2.style.display = 'none';
+        page3.style.display = 'block';
+      })
+
+      // function pageSelect(i) {
+      //   switch(i) {
+      //     case: 1;
+      //       page1.style.display = 'block';
+      //       page2.style.display = 'none';
+      //       break;
+      //
+      //     case: 2;
+      //       page1.style.display = 'none';
+      //       page2.style.display = 'block';
+      //   }
+      // }
+
+      function text(canvas,text) {
+        var ctx = canvas.getContext("2d");
+        ctx.clearRect(0,0,canvas.width,canvas.height);
+        ctx.font = "30px Arial";
+        ctx.textAlign = 'center';
+        ctx.fillText(text,canvas.width/2,canvas.height/1.4);
+      }
+
+      function drawLine(y,canvas) {
+        var ctx = canvas.getContext('2d');
+        ctx.clearRect(0,0,canvas.width,canvas.height);
+        ctx.beginPath();
+        ctx.fillRect(0,y,canvas.width,canvas.height - y)
+      };
+
+      function drawBall(x,y,canvas) {
+        var ctx = canvas.getContext('2d');
+        ctx.clearRect(0,0,canvas.width,canvas.height);
+        ctx.beginPath();
+        ctx.arc(x,y,7,0,2*Math.PI);
+        //ctx.fillStyle = '#b26b00';
+        ctx.fill();
+      }
+
+      function getTouchPos(canvas,evt) {
+        var rect = canvas.getBoundingClientRect();
+        return {
+          x: evt.changedTouches[0].clientX - rect.left,
+          y: evt.changedTouches[0].clientY - rect.top
+        }
+      }
+
+
+
+      xyPad.addEventListener('touchstart', function(evt) {
+        var touchPos = getTouchPos(xyPad,evt);
+        if(
+          touchPos.x <= xyPad.width &&
+          touchPos.x >= 0 &&
+          touchPos.y <= xyPad.height &&
+          touchPos.y >= 0) {
+          drawBall(touchPos.x,touchPos.y,xyPad);
+          socket.emit('xPos', touchPos.x / xyPad.width);
+          socket.emit('yPos', touchPos.y / xyPad.height);
+        };
+
+        evt.preventDefault();
+      })
+
+      xyPad.addEventListener('touchmove', function(evt) {
+        var touchPos = getTouchPos(xyPad,evt);
+        if(touchPos.x <= xyPad.width && touchPos.y <= xyPad.height) {
+          drawBall(touchPos.x,touchPos.y,xyPad);
+          socket.emit('xPos', touchPos.x / xyPad.width);
+          socket.emit('yPos', touchPos.y / xyPad.height);
+        };
+        evt.preventDefault();
+      })
+
+
+
+      playStatus.addEventListener('touchstart', function(evt) {
+        if(isPlaying) {
+          text(playStatus, 'Play');
+          socket.emit('onOff', 0);
+          isPlaying = false
+        } else {
+          text(playStatus, 'Stop');
+          socket.emit('onOff', 1);
+          isPlaying = true
+        };
+
+        evt.preventDefault();
+      })
+
+      freqRange.addEventListener('touchstart', function(evt) {
+        var touchPos = getTouchPos(freqRange,evt);
+        drawLine(touchPos.y,freqRange);
+        if(touchPos.y > 0 && touchPos.y < freqRange.height) {
+          socket.emit('freqRange', touchPos.y/freqRange.height);
+        };
+        evt.preventDefault();
+      });
+
+      freqRange.addEventListener('touchmove', function(evt) {
+        var touchPos = getTouchPos(freqRange,evt);
+        drawLine(touchPos.y,freqRange);
+        if(touchPos.y > 0 && touchPos.y < freqRange.height) {
+          socket.emit('freqRange', touchPos.y/freqRange.height);
+        };
+        evt.preventDefault();
+      })
+
+      timeChance.addEventListener('touchstart', function(evt) {
+        var touchPos = getTouchPos(timeChance,evt);
+        drawLine(touchPos.y,timeChance);
+
+          socket.emit('timeChance', touchPos.y/timeChance.height);
+
+        evt.preventDefault();
+      });
+
+      timeChance.addEventListener('touchmove', function(evt) {
+        var touchPos = getTouchPos(timeChance,evt);
+        drawLine(touchPos.y,timeChance);
+
+
+          socket.emit('timeChance', touchPos.y/timeChance.height);
+
+
+        evt.preventDefault();
+      });
+
+      // scale.addEventListener('touchstart', function() {
+      //   var major = document.getElementById('major');
+      //   var minor = document.getElementById('minor');
+      //   var minmaj = document.getElementById('minmaj');
+      //
+      //   if(major.checked) {
+      //     socket.emit('scale', 1)
+      //   };
+      //   if (minor.checked) {
+      //     socket.emit('scale',2)
+      //   };
+      //   if (minmaj.checked) {
+      //     socket.emit('scale',3)
+      //   }
+      // });
+
+      scale.addEventListener('change', function() {
+        socket.emit('scale', scale.value)
+      });
+
+      transpose.addEventListener('change', function() {
+        socket.emit('transpose', transpose.value)
+      });
+
+      // showPage1.addEventListener('click', function() {
+      //   pageSelect(1);
+      // });
+      //
+      // showPage1.addEventListener('click', function() {
+      //   pageSelect(2);
+      // });
+
+      socket.on('page', function(data) {
+        // if(data == 1) {
+        //   page1.style.display = 'block';
+        //   page2.style.display = 'none';
+        //   page3.style.display =
+        // };
+        //
+        // if(data == 2) {
+        //   page1.style.display = 'none';
+        //   page2.style.display = 'block';
+        // }
+
+        switch(data) {
+          case 1:
+            page1.style.display = 'block';
+            page2.style.display = 'none';
+            page3.style.display = 'none';
+            break;
+          case 2:
+            page1.style.display = 'none';
+            page2.style.display = 'block';
+            page3.style.display = 'none';
+            break;
+          case 3:
+            page1.style.display = 'none';
+            page2.style.display = 'none';
+            page3.style.display = 'block'
+
+        }
+      })
+
+      text(playStatus, 'Play');
+      drawBall(xyPad.width/2,xyPad.height/2,xyPad);
+      drawLine(freqRange.height/2,freqRange);
+      drawLine(timeChance.height/2, timeChance);
+
+    </script>
+
+
+  </body>
+</html>
