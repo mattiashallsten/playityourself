@@ -152,6 +152,7 @@
     <h1 id="title">
       Play it Yourself
     </h1>
+    <button id="size">Size</button>
 
     <!-- PAGE 1 -->
     <div id="page1">
@@ -160,7 +161,7 @@
           Press play to start playing. Drag the ball in the yellow square to change pitch and tempo
         </p>
       </div>
-      <canvas id="xyPad" height="400%" width="400%"></canvas><br>
+      <canvas id="xyPad"></canvas><br>
       <button id="playStatus">Play</button>
     </div>
 
@@ -226,6 +227,7 @@
 
     <script src="/socket.io/socket.io.js"></script>
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+    <!-- <script type="text/jscript" src="objectsizes.js"></script> -->
     <!-- <script src="scripts.js"></script> -->
 
     <script>
@@ -246,9 +248,32 @@
       var transpose = document.getElementById('transpose');
       var showPage1 = document.getElementById('showPage1');
       var showPage2 = document.getElementById('showPage2');
+      var size = document.getElementById('size');
+      var screenWidth = window.innerWidth;
+      var screenHeight = window.innerHeight;
+      var xyPadSize;
+
+      if(screenWidth > screenHeight) {
+        xyPadSize = screenHeight * 0.9;
+      } else {
+        xyPadSize = screenWidth * 0.9;
+      };
+
+
+      xyPad.width = xyPadSize;
+      xyPad.height = xyPadSize;
+
+
 
 
       var isPlaying = false;
+
+      size.addEventListener('click', function() {
+        var width = window.outerWidth;
+        var height = window.outerHeight;
+
+        socket.emit('size', [width,height])
+      })
 
 
 

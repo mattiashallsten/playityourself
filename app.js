@@ -21,8 +21,10 @@ udpPort.open();
 app.use(express.static(__dirname + '/node_modulse'));
 
 app.get('/', function(req,res,next) {
+
+  res.sendFile(__dirname + '/index.html');
+
   var clientIP = req.connection.remoteAddress.slice(7);
-  res.sendFile(__dirname + 'index.html');
   // for (var i = 0; i < users.length; i++) {
   //   if(users[i] != clientIP) {
   //     users.unshift(clientIP);
@@ -39,6 +41,10 @@ io.on('connection', function(client) {
   //console.log(users);
   console.log(clientIP);
 
+  client.on('size', function(data) {
+    console.log(data)
+  })
+
   // NEEDS FIXING
 
   // for(var i = 0; i < 3; i++) {
@@ -52,7 +58,7 @@ io.on('connection', function(client) {
   //   }
   // }
 
-  client.emit('page', 2);
+  client.emit('page', 1);
 
   client.on('xPos', function(data) {
     udpPort.send({
