@@ -14,17 +14,43 @@ var udpPort = new osc.UDPPort({
   metadata: true
 });
 
+var users = [NaN,NaN,NaN];
+
 udpPort.open();
 
 app.use(express.static(__dirname + '/node_modulse'));
 
 app.get('/', function(req,res,next) {
-  res.sendFile(__dirname + 'index.html')
+  var clientIP = req.connection.remoteAddress.slice(7);
+  res.sendFile(__dirname + 'index.html');
+  // for (var i = 0; i < users.length; i++) {
+  //   if(users[i] != clientIP) {
+  //     users.unshift(clientIP);
+  //   }
+  // }
+
+  //users.unshift(clientIP);
 });
 
 
 io.on('connection', function(client) {
+  var clientIP = client.client.conn.remoteAddress.slice(7);
   console.log('Connection!');
+  //console.log(users);
+  console.log(clientIP);
+
+  // NEEDS FIXING
+
+  // for(var i = 0; i < 3; i++) {
+  //   if(users[i] != clientIP) {
+  //     users.unshift(clientIP);
+  //     console.log(users);
+  //     //console.log(clientIP)
+  //   } else {
+  //     console.log("Already connected");
+  //     console.log(users);
+  //   }
+  // }
 
   client.emit('page', 2);
 
@@ -36,7 +62,7 @@ io.on('connection', function(client) {
         value: data
       }
     }, remote, remotePort);
-    console.log(data)
+    console.log('xpos: ' + data)
   });
 
   client.on('yPos', function(data) {
@@ -46,7 +72,8 @@ io.on('connection', function(client) {
         type: 'f',
         value: data
       }
-    }, remote, remotePort)
+    }, remote, remotePort);
+    console.log('ypos: ' + data)
   });
 
   client.on('onOff', function(data) {
@@ -105,6 +132,10 @@ io.on('connection', function(client) {
         value: data
       }
     }, remote, remotePort)
+    console.log(data)
+  });
+
+  client.on('size', function(data) {
     console.log(data)
   })
 })
