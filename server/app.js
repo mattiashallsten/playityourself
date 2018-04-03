@@ -1,6 +1,7 @@
 var osc = require ('osc');
 var express = require('express');
 var app = express();
+var path = require('path');
 
 var server = require('http').createServer(app);
 var io = require('socket.io')(server);
@@ -22,7 +23,7 @@ app.use(express.static(__dirname + '/node_modulse'));
 
 app.get('/', function(req,res,next) {
 
-  res.sendFile(__dirname + '/index.html');
+  res.sendFile(path.join(__dirname, '../client/index.html'));
 
   var clientIP = req.connection.remoteAddress.slice(7);
   // for (var i = 0; i < users.length; i++) {

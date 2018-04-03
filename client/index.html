@@ -5,6 +5,8 @@
     <meta name="viewport" content="width=device-width,initial-scale=1">
     <title></title>
 
+    <!-- <link rel="stylesheet" href="style.css"> -->
+
 
 
     <style>
@@ -38,13 +40,26 @@
         /* height: 60% */
       }
 
-
-
       #playStatus {
         position: absolute;
-        top: 85%;
-        width: 96%;
-        height: 10%;
+        top: 80%;
+
+
+        left: 0;
+        right: 0;
+        margin: auto;
+        background-color: #ffe000;
+        border-radius: 10px
+      }
+
+
+
+      /* #playStatus {
+        position: absolute;
+        top: 0;
+        left: 0;
+
+        margin: auto;
 
         background-color: #ffe000;
         border: none;
@@ -52,13 +67,15 @@
         font-size: 32px;
         border-radius: 10px
 
-      }
+      } */
 
       #freqRange {
         max-width: 50%;
         /* height: 80%; */
         /* width: 30% */
       }
+
+
 
       .slider {
         margin: auto
@@ -111,7 +128,12 @@
 
       .instructions {
         text-align: center;
-        font-family: Georgia, serif
+        font-family: Georgia, serif;
+        position: absolute;
+        top: 10%;
+        left: 0;
+        right: 0;
+        margin: 10px
 
       }
 
@@ -156,13 +178,17 @@
 
     <!-- PAGE 1 -->
     <div id="page1">
-      <div >
+      <div>
         <p class="instructions">
           Press play to start playing. Drag the ball in the yellow square to change pitch and tempo
         </p>
       </div>
-      <canvas id="xyPad"></canvas><br>
-      <button id="playStatus">Play</button>
+      <div>
+        <canvas id="xyPad"></canvas><br>
+      </div>
+      <div>
+        <button id="playStatus">Play</button>
+      </div>
     </div>
 
     <!-- PAGE 2 -->
@@ -227,7 +253,7 @@
 
     <script src="/socket.io/socket.io.js"></script>
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
-    <!-- <script type="text/jscript" src="objectsizes.js"></script> -->
+    <!-- <script type="text/jscript" src="scripts/objectsizes.js"></script> -->
     <!-- <script src="scripts.js"></script> -->
 
     <script>
@@ -262,6 +288,14 @@
 
       xyPad.width = xyPadSize;
       xyPad.height = xyPadSize;
+
+      freqRange.width = screenWidth * 0.47;
+      timeChance.width = screenWidth * 0.47;
+
+      playStatus.style.width = screenWidth * 0.9 + "px";
+      playStatus.style.height = screenHeight * 0.1 + "px";
+
+      console.log(screenWidth);
 
 
 
