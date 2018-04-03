@@ -9,6 +9,11 @@
 
     <style>
 
+      /* body {
+        width: 100%;
+        height: 100%
+      } */
+
       canvas {
         background-color: #ffe000
       }
@@ -27,8 +32,10 @@
         left: 0;
         right: 0;
         margin:auto;
-        border-radius: 10px
+        border-radius: 10px;
         /* background-color: #ffe000; */
+        /* width: 90%; */
+        /* height: 60% */
       }
 
 
@@ -43,12 +50,18 @@
         border: none;
         text-align: center;
         font-size: 32px;
-        border-radius: 10px{}
+        border-radius: 10px
 
       }
 
       #freqRange {
-        max-width: 50%
+        max-width: 50%;
+        /* height: 80%; */
+        /* width: 30% */
+      }
+
+      .slider {
+        margin: auto
       }
 
 
@@ -142,12 +155,12 @@
 
     <!-- PAGE 1 -->
     <div id="page1">
-      <div width='device-width'>
+      <div >
         <p class="instructions">
           Press play to start playing. Drag the ball in the yellow square to change pitch and tempo
         </p>
       </div>
-      <canvas id="xyPad" width="400%" height="400%"></canvas><br>
+      <canvas id="xyPad" height="400%" width="400%"></canvas><br>
       <button id="playStatus">Play</button>
     </div>
 
@@ -160,7 +173,7 @@
       </div>
       <canvas
         id="freqRange" class="slider"
-        height="400%%" width="180%">
+        height="400%" width="180%">
       </canvas>
       <canvas
         id="timeChance" class="slider"
@@ -212,6 +225,7 @@
     <p id="post"></p>
 
     <script src="/socket.io/socket.io.js"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
     <!-- <script src="scripts.js"></script> -->
 
     <script>
@@ -242,7 +256,7 @@
       showPage1.addEventListener('click', function() {
         page1.style.display = 'block';
         page2.style.display = 'none';
-        page3.style.display = 'none'
+        page3.style.display = 'none';
       })
 
       showPage2.addEventListener('click', function() {
@@ -430,6 +444,8 @@
 
         }
       })
+
+
 
       drawBall(xyPad.width/2,xyPad.height/2,xyPad);
       drawLine(freqRange.height/2,freqRange);
