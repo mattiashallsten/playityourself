@@ -73,12 +73,26 @@
         max-width: 50%;
         /* height: 80%; */
         /* width: 30% */
+        top: 0;
+        bottom: 0;
+        left: 5%;
+
+      }
+
+      #timeChance {
+        max-width: 50%;
+        top: 0;
+        bottom: 0;
+        right: 5%
+
       }
 
 
 
       .slider {
-        margin: auto
+        position: absolute;
+        margin: auto;
+        border-radius: 10px
       }
 
 
@@ -141,26 +155,7 @@
 
 
 
-      /* .slider {
-        width: 20%
 
-      } */
-
-      /* #page2 {
-        height: 70%;
-        width: 100%
-      }
-
-      .slider {
-        width: 40%;
-        height: 100%
-      } */
-
-
-
-      /* select {
-        height: 30%
-      } */
 
 
 
@@ -289,8 +284,11 @@
       xyPad.width = xyPadSize;
       xyPad.height = xyPadSize;
 
-      freqRange.width = screenWidth * 0.47;
-      timeChance.width = screenWidth * 0.47;
+      freqRange.width = screenWidth * 0.45;
+      timeChance.width = screenWidth * 0.45;
+
+      freqRange.height = xyPadSize;
+      timeChance.height = xyPadSize;
 
       playStatus.style.width = screenWidth * 0.9 + "px";
       playStatus.style.height = screenHeight * 0.1 + "px";

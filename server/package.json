@@ -1,16 +1,15 @@
 {
-  "name": "server",
+  "name": "playityourself",
   "version": "1.0.0",
-  "description": "Sending OSC messages to PD via a node.js server",
+  "description": "Node app for interfacing with a Pd patch, controlling a Disklavier, via OSC.",
   "main": "app.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
-  "author": "Mattias Hållste",
+  "author": "",
   "license": "ISC",
   "dependencies": {
     "express": "^4.16.3",
-    "jquery": "^3.3.1",
     "osc": "^2.2.0",
     "socket.io": "^2.1.0"
   }
