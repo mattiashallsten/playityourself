@@ -9,5 +9,6 @@ Node app for sending OSC messages to a Pd-patch, in turn sending MIDI to a Yamah
 - ~~Fix the CSS styling so that JavaScript understands the size of a canvas using the .getBoundingClientRect() method~~
 - ~~Add legato slider~~
 - ~~Add chord box~~
-- Add "log out" button in top right corner
+- ~~Add "disconnect" button~~
 - Add timer too look for inactivity, logging off inactive clients
+- Add randomization to scale and transpose values
