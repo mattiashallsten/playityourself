@@ -6,7 +6,7 @@ var path = require('path');
 var server = require('http').createServer(app);
 var io = require('socket.io')(server);
 
-const remote = '127.0.0.1';
+const remote = '10.10.2.186';
 const remotePort = 8000;
 
 var udpPort = new osc.UDPPort({
@@ -126,11 +126,15 @@ io.on('connection', function(client) {
     sendOSC('/chord', 0)
   }
 
+  client.emit('playStatus', isPlaying)
+
+  client.emit('xPos', xyPadState[0]);
+  client.emit('yPos', xyPadState[1]);
+
   client.emit('transpose', transposeState);
   client.emit('scale', scaleState);
 
   client.on('connectButton', function() {
-    var id;
     var i;
     console.log('connect');
     connect(clientIP);
@@ -143,7 +147,10 @@ io.on('connection', function(client) {
       }
     };
     client.emit('page', id);
+  });
 
+  client.on('disconnectButton', function() {
+    con[id] = null;
   })
 
   client.on('xPos', function(data) {

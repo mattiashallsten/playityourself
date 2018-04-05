@@ -97,7 +97,7 @@
 
       #freqRangeLabel {
         position: absolute;
-        top: 77%;
+        top: 68%;
         left: 5%;
         text-align: center;
         font-size: 20px
@@ -105,7 +105,7 @@
 
       #timeChanceLabel {
         position: absolute;
-        top: 77%;
+        top: 68%;
         right: 5%;
         text-align: center;
         font-size: 20px
@@ -113,7 +113,7 @@
 
       #suspedal {
         position: absolute;
-        top: 85%;
+        top: 80%;
 
 
         left: 0;
@@ -137,20 +137,20 @@
 
       #transposeSelection {
         position: absolute;
-        top: 40%;
+        top: 35%;
         left: 5%;
       }
 
       #legatoSlider {
         max-width: 50%;
-        top: 40%;
+        top: 35%;
         right: 5%
 
       }
 
       #chord {
         position: absolute;
-        top: 70%;
+        top: 60%;
 
 
         left: 5%;
@@ -221,6 +221,13 @@
       <button id="connect">Connect</button>
     </div>
 
+    <!-- Disconnected -->
+    <div id="disconnected" style="display:none">
+      <p class="instructions">
+        Thank you for playing! To try again, refresh this page and click the "Connect" button again!
+      </p>
+    </div>
+
     <!-- PAGE 1 -->
     <div id="page1" style="display:none">
       <div>
@@ -237,7 +244,7 @@
     </div>
 
     <!-- PAGE 2 -->
-    <div id="page3" style="display:none">
+    <div id="page2" style="display:none">
       <div>
       <p class="instructions">
         Change range of notes and the probability of a different rhythm. Here you can also toggle the sustain pedal on or off.
@@ -254,7 +261,7 @@
 
 
     <!-- PAGE 3 -->
-    <div id="page2" style="display:none">
+    <div id="page3" style="display:none">
 
       <p class="instructions">
         Here you can select what scale and key that the piano is playing. Different keys can yield interesting results due to how the algorithmic sequencer is built.
@@ -326,6 +333,9 @@
       var startUp = document.getElementById('startUp');
       var sorry = document.getElementById('sorry');
 
+      // DISCONNECTED
+      var disconnected = document.getElementById('disconnected');
+
       // PAGE ONE
       var playStatus = document.getElementById('playStatus');
       var xyPad = document.getElementById('xyPad');
@@ -382,10 +392,10 @@
 
       // PAGE TWO
       freqRange.width = screenWidth * 0.42;
-      freqRange.height = xyPadSize;
+      freqRange.height = xyPadSize * 0.7;
 
       timeChance.width = screenWidth * 0.42;
-      timeChance.height = xyPadSize;
+      timeChance.height = xyPadSize * 0.7;
 
       freqRangeLabel.style.width = screenWidth * 0.42 + "px";
       timeChanceLabel.style.width = screenWidth * 0.42 + "px";
@@ -498,7 +508,14 @@
       }
 
       disconnect.addEventListener('click', function() {
-        console.log('check')
+        disconnected.style.display = 'block';
+        startUp.style.display = 'none';
+        page1.style.display = 'none';
+        page2.style.display = 'none';
+        page3.style.display = 'none';
+
+        socket.emit('disconnectButton');
+
       })
 
       // PAGE ONE
@@ -516,7 +533,6 @@
 
         evt.preventDefault();
       })
-
 
       xyPad.addEventListener('touchmove', function(evt) {
         var touchPos = getTouchPos(xyPad,evt);
@@ -672,6 +688,14 @@
       socket.on('scale', function(data) {
         scaleState = data;
         selectItemByValue(scale, scaleState.toString())
+      })
+
+      socket.on('playStatus', function(data) {
+        if(data) {
+          playStatus.innerHTML = 'Stop'
+        } else {
+          playStatus.innerHTML = 'Play'
+        }
       })
 
 
