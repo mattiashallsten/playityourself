@@ -15,7 +15,11 @@ var udpPort = new osc.UDPPort({
   metadata: true
 });
 
-var users = [NaN,NaN,NaN];
+
+var con = [null,null,null];
+
+var scaleState = 0;
+var transposeState = 0;
 
 udpPort.open();
 
@@ -26,21 +30,36 @@ app.get('/', function(req,res,next) {
   res.sendFile(path.join(__dirname, '../client/index.html'));
 
   var clientIP = req.connection.remoteAddress.slice(7);
-  // for (var i = 0; i < users.length; i++) {
-  //   if(users[i] != clientIP) {
-  //     users.unshift(clientIP);
-  //   }
-  // }
-
-  //users.unshift(clientIP);
 });
 
 
+
+
+// funkar! måste bara se till så att disconnect funkar som det ska.
+function connect(ip) {
+  for(var i = 0; i < con.length; i++) {
+    if(ip == con[i]) {
+      console.log(ip + " is already connected!");
+      connected = true;
+      break;
+    } else if (con[i] = ip) {
+      con[i] = ip;
+      console.log("Connected " + ip + "!");
+      connected = true;
+      break;
+    }
+  }
+}
+
 io.on('connection', function(client) {
   var clientIP = client.client.conn.remoteAddress.slice(7);
-  console.log('Connection!');
+  var connected = false;
+
+  connect(clientIP);
+
+  // console.log('Connection!');
   //console.log(users);
-  console.log(clientIP);
+  // console.log(clientIP);
 
   client.on('size', function(data) {
     console.log(data)
@@ -60,6 +79,9 @@ io.on('connection', function(client) {
   // }
 
   client.emit('page', 1);
+
+  client.emit('transpose', transposeState);
+  client.emit('scale', scaleState);
 
   client.on('xPos', function(data) {
     udpPort.send({
@@ -128,7 +150,8 @@ io.on('connection', function(client) {
         type: 'i',
         value: data
       }
-    }, remote, remotePort)
+    }, remote, remotePort);
+    scaleState = data
   });
 
   client.on('transpose', function(data) {
@@ -139,12 +162,27 @@ io.on('connection', function(client) {
         value: data
       }
     }, remote, remotePort)
-    console.log(data)
+    console.log(data);
+    transposeState = data;
   });
 
   client.on('size', function(data) {
     console.log(data)
+  });
+
+  client.on('disconnect', function() {
+    setTimeout(disconnected, 1000)
   })
-})
+
+  function disconnected() {
+    console.log('client disconnected')
+  }
+});
+
+
+
+
+
+
 
 server.listen(4200);
