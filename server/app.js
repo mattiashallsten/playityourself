@@ -6,7 +6,7 @@ var path = require('path');
 var server = require('http').createServer(app);
 var io = require('socket.io')(server);
 
-const remote = '10.10.2.186';
+const remote = '127.0.0.1';
 const remotePort = 8000;
 
 var udpPort = new osc.UDPPort({
@@ -17,6 +17,7 @@ var udpPort = new osc.UDPPort({
 
 
 var con = [null,null,null];
+var clientsConnected = true;
 
 var scaleState = 1;
 var transposeState = 0;
@@ -27,10 +28,6 @@ var isPlaying = false;
 var suspedalState = false;
 var chordOn = false;
 var legatoState = 0.5;
-
-udpPort.on('bundle', function(oscBundle, timeTage, info) {
-  console.log('bundle received!')
-})
 
 udpPort.open();
 
@@ -48,6 +45,7 @@ app.get('/', function(req,res,next) {
 
 
 
+
 // funkar! måste bara se till så att disconnect funkar som det ska.
 function connect(ip) {
   for(var i = 0; i < con.length; i++) {
@@ -61,7 +59,36 @@ function connect(ip) {
       connected = true;
       break;
     }
+  };
+  clientsConnected = true;
+  if(isPlaying) {
+    sendOSC('/onOff', 1);
+  } else {
+    sendOSC('/onOff', 0);
+    console.log('connected but not playing')
+  };
+
+  sendOSC('/velOn', 1);
+  sendOSC('/freq', xyPadState[0]);
+  sendOSC('/time', xyPadState[1]);
+  sendOSC('/freqRange', freqRangeState);
+  sendOSC('/timeChance', timeChanceState);
+  // sendOSC('/scale', scaleState);
+  // sendOSC('/transpose', transposeState);
+  if(suspedalState) {
+      sendOSC('/suspedal', 1)
+  } else {
+      sendOSC('/suspedal', 0)
   }
+
+  if(chordOn) {
+    sendOSC('/chord', 1)
+  } else {
+    sendOSC('/chord', 0)
+  };
+
+  console.log('scale: ' + scaleState);
+  console.log('transpose: ' + transposeState)
 }
 
 function sendOSC(address, value) {
@@ -72,6 +99,30 @@ function sendOSC(address, value) {
       value: value
     }
   }, remote, remotePort)
+}
+
+function initialize() {
+  var scaleInit;
+  var transposeInit;
+
+  scaleInit = Math.floor(Math.random() * 3);
+  transposeInit = Math.floor(Math.random() * 5) * 2;
+
+  sendOSC('/scale', scaleInit + 1);
+  sendOSC('/transpose', transposeInit + 1);
+  scaleState = scaleInit;
+  transposeState = transposeInit;
+
+  sendOSC('/onOff', 1);
+  sendOSC('/freq', 0.5);
+  sendOSC('/time', 0.5);
+  sendOSC('/freqRange', 0.5);
+  sendOSC('/timeChance', 0.5);
+  sendOSC('/suspedal', 0);
+  sendOSC('/chord', 1);
+  sendOSC('/legato', 0.5);
+
+  sendOSC('/velOn', 0);
 }
 //
 // function getId(ip,client) {
@@ -84,47 +135,61 @@ function sendOSC(address, value) {
 //   }
 // }
 
+initialize();
+
 io.on('connection', function(client) {
   var clientIP = client.client.conn.remoteAddress.slice(7);
   var connected = false;
   var id;
 
-  setInterval(function() {
-    console.log(con)
-  }, 5000)
+
+
+
+  // initialize();
 
   // console.log('Connection!');
   //console.log(users);
   // console.log(clientIP);
 
-  client.on('size', function(data) {
-    console.log(data)
-  })
-
-  sendOSC('/freq', xyPadState[0]);
-  sendOSC('/time', xyPadState[1]);
-  sendOSC('/freqRange', freqRangeState);
-  sendOSC('/timeChance', timeChanceState);
-  sendOSC('/scale', scaleState);
-  sendOSC('/transpose', transposeState);
-
-  if(isPlaying) {
-    sendOSC('/onOff', 1);
-  } else {
-    sendOSC('/onOff', 0)
+  if(
+    (con[0] == null) &&
+    (con[1] == null) &&
+    (con[2] == null)
+  ) {
+    scaleState = Math.floor(Math.random() * 3);
+    transposeState = Math.floor(Math.random() * 6) * 2;
   }
 
-  if(suspedalState) {
-    sendOSC('/suspedal', 1)
-  } else {
-    sendOSC('/suspedal', 0)
-  }
 
-  if(chordOn) {
-    sendOSC('/chord', 1)
-  } else {
-    sendOSC('/chord', 0)
-  }
+
+
+
+  // sendOSC('/velOn', 1);
+  // sendOSC('/freq', xyPadState[0]);
+  // sendOSC('/time', xyPadState[1]);
+  // sendOSC('/freqRange', freqRangeState);
+  // sendOSC('/timeChance', timeChanceState);
+  // sendOSC('/scale', scaleState);
+  // sendOSC('/transpose', transposeState);
+
+  // if(isPlaying) {
+  //   sendOSC('/onOff', 1);
+  // } else {
+  //   sendOSC('/onOff', 0);
+  //   console.log('connected but not playing')
+  // }
+
+  // if(suspedalState) {
+  //   sendOSC('/suspedal', 1)
+  // } else {
+  //   sendOSC('/suspedal', 0)
+  // }
+  //
+  // if(chordOn) {
+  //   sendOSC('/chord', 1)
+  // } else {
+  //   sendOSC('/chord', 0)
+  // }
 
   client.emit('playStatus', isPlaying)
 
@@ -154,37 +219,40 @@ io.on('connection', function(client) {
   })
 
   client.on('xPos', function(data) {
-    udpPort.send({
-      address: '/freq',
-      args: {
-        type: 'f',
-        value: data
-      }
-    }, remote, remotePort);
+    // udpPort.send({
+    //   address: '/freq',
+    //   args: {
+    //     type: 'f',
+    //     value: data
+    //   }
+    // }, remote, remotePort);
+    sendOSC('/freq', data);
     console.log('xpos: ' + data);
     xyPadState[0] = data;
   });
 
   client.on('yPos', function(data) {
-    udpPort.send({
-      address: '/time',
-      args: {
-        type: 'f',
-        value: data
-      }
-    }, remote, remotePort);
+    // udpPort.send({
+    //   address: '/time',
+    //   args: {
+    //     type: 'f',
+    //     value: data
+    //   }
+    // }, remote, remotePort);
+    sendOSC('/time', data);
     console.log('ypos: ' + data);
     xyPadState[1] = data;
   });
 
   client.on('onOff', function(data) {
-    udpPort.send({
-      address: '/onOff',
-      args: {
-        type: 'i',
-        value: data
-      }
-    }, remote, remotePort);
+    // udpPort.send({
+    //   address: '/onOff',
+    //   args: {
+    //     type: 'i',
+    //     value: data
+    //   }
+    // }, remote, remotePort);
+    sendOSC('/onOff', data);
     if(data == 1) {
       console.log('Playing!');
       isPlaying = true;
@@ -197,24 +265,27 @@ io.on('connection', function(client) {
   });
 
   client.on('freqRange', function(data) {
-    udpPort.send({
-      address: '/freqRange',
-      args: {
-        type: 'f',
-        value: data * (-1) + 1
-      }
-    }, remote, remotePort);
+    // udpPort.send({
+    //   address: '/freqRange',
+    //   args: {
+    //     type: 'f',
+    //     value: data * (-1) + 1
+    //   }
+    // }, remote, remotePort);
+    sendOSC('/freqRange', data);
     freqRangeState = data;
   });
 
   client.on('timeChance', function(data) {
-    udpPort.send({
-      address: '/timeChance',
-      args: {
-        type: 'f',
-        value: data * (-1) + 1
-      }
-    }, remote, remotePort);
+    // udpPort.send({
+    //   address: '/timeChance',
+    //   args: {
+    //     type: 'f',
+    //     value: data * (-1) + 1
+    //   }
+    // }, remote, remotePort);
+
+    sendOSC('/timeChance', data);
 
     console.log('TimeChance: ' + data);
     timeChanceState = data;
@@ -232,24 +303,26 @@ io.on('connection', function(client) {
 
   client.on('scale', function(data) {
     console.log('Scale: ' + data)
-    udpPort.send({
-      address: '/scale',
-      args: {
-        type: 'i',
-        value: data
-      }
-    }, remote, remotePort);
+    // udpPort.send({
+    //   address: '/scale',
+    //   args: {
+    //     type: 'i',
+    //     value: data
+    //   }
+    // }, remote, remotePort);
+    sendOSC('/scale', data);
     scaleState = data
   });
 
   client.on('transpose', function(data) {
-    udpPort.send({
-      address: '/transpose',
-      args: {
-        type: 'i',
-        value: data
-      }
-    }, remote, remotePort)
+    // udpPort.send({
+    //   address: '/transpose',
+    //   args: {
+    //     type: 'i',
+    //     value: data
+    //   }
+    // }, remote, remotePort)
+    sendOSC('/transpose', data);
     console.log(data);
     transposeState = data;
   });
@@ -273,17 +346,54 @@ io.on('connection', function(client) {
   });
 
   client.on('disconnect', function() {
-    setTimeout(disconnected, 1000)
+    for(var i = 0; i < con.length; i++) {
+      if(con[i] == clientIP) {
+        con[i] = null
+      }
+    };
+
+    console.log(con);
   })
 
-  function disconnected() {
-    console.log('client disconnected')
-  }
+
 });
 
 
+// function allDisconnected() {
+//   if(
+//     (con[0] = null) &&
+//     (con[1] = null) &&
+//     (con[2] = null)
+//   ) {
+//     initialize()
+//   }
+// }
 
+setTimeout(nobodyPlaying, 10000)
 
+function nobodyPlaying() {
+  setInterval(function() {
+    if(
+      (con[0] == null) &&
+      (con[1] == null) &&
+      (con[2] == null) &&
+      (clientsConnected)
+    ) {
+      initialize();
+      console.log('Initialized!');
+      clientsConnected = false
+    }
+  }, 10000);
+}
+
+setInterval(function() {
+  console.log(con);
+  if(clientsConnected) {
+    console.log('Clients connected!')
+  } else {
+    console.log('No clients connected!')
+  }
+}, 5000)
 
 
 

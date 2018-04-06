@@ -9,8 +9,18 @@
 
     <style>
 
+      body {
+        background-color: #ffd000
+      }
+
       canvas {
-        background-color: #ffe000
+        /* background-color: #ffd000 */
+        background-color: #ffd000;
+        border: 2px solid black
+      }
+
+      button {
+        border: 2px solid black
       }
 
 
@@ -20,7 +30,15 @@
 
       }
 
+      #logo {
+        position: absolute;
+        width: 100%;
+        margin: auto;
+        bottom: 8%
+      }
+
       #disconnect {
+        display: none;
         position: absolute;
         top: 93%;
 
@@ -48,7 +66,7 @@
         bottom: 0;
         left: 0;
         right: 0;
-        background-color: #ffe000;
+        background-color: #ffd000;
         border-radius: 10px
       }
 
@@ -71,7 +89,7 @@
         left: 0;
         right: 0;
         margin: auto;
-        background-color: #ffe000;
+        background-color: #ffd000;
         border-radius: 10px
       }
 
@@ -119,7 +137,7 @@
         left: 0;
         right: 0;
         margin: auto;
-        background-color: #ffe000;
+        background-color: #ffd000;
         border-radius: 10px
       }
 
@@ -143,19 +161,34 @@
 
       #legatoSlider {
         max-width: 50%;
-        top: 35%;
+        top: 0;
+        bottom: 0;
         right: 5%
 
       }
 
+      #legatoLabel {
+        position: absolute;
+        top: 68%;
+        right: 5%;
+        text-align: center;
+        font-size: 20px
+      }
+
       #chord {
         position: absolute;
-        top: 60%;
+        top: 80%;
+
+        left: 0;
+        right: 0;
+        margin: auto;
+        background-color: #ffd000;
+        border-radius: 10px
 
 
         left: 5%;
         margin: auto;
-        background-color: #ffe000;
+        background-color: #ffd000;
         border-radius: 10px
       }
 
@@ -163,7 +196,8 @@
         /* height: 40px;
         width: 42%; */
         font-size: 20px;
-        text-align: center
+        text-align: center;
+        background-color: #ffd000
       }
 
       #showPage1 {
@@ -209,6 +243,7 @@
       Play it Yourself
     </h1>
 
+
     <button id="disconnect">Disconnect</button>
 
     <!-- Startup screen -->
@@ -218,13 +253,14 @@
         When you're done playing, log off either by pressing the red "Disconnect" button or by closing this tab.
       </p>
       <br>
-      <button id="connect">Connect</button>
     </div>
+    <button id="connect">Connect</button>
+    <img id="logo" src="https://i.imgur.com/QGoRc8d.png">
 
     <!-- Disconnected -->
     <div id="disconnected" style="display:none">
       <p class="instructions">
-        Thank you for playing! To try again, refresh this page and click the "Connect" button again!
+        Thank you for playing! To try again, click the "Connect" button again!
       </p>
     </div>
 
@@ -293,6 +329,7 @@
       </div>
       <canvas id="legatoSlider" class="slider"></canvas>
       <button id="chord">Chord off</button>
+      <p id="legatoLabel">Legato</p>
     </div>
 
 
@@ -321,11 +358,14 @@
     <script>
 
       var socket = io.connect();
+      // var patch = require('socketio-wildcard')(io.Manager);
+      // patch(socket);
 
       var connect = document.getElementById('connect');
 
       var title = document.getElementById('title');
       var disconnect = document.getElementById('disconnect');
+      var logo = document.getElementById('logo');
 
       var page1 = document.getElementById('page1');
       var page2 = document.getElementById('page2');
@@ -353,6 +393,7 @@
       var transpose = document.getElementById('transpose');
       var legatoSlider = document.getElementById('legatoSlider');
       var chord = document.getElementById('chord');
+      var legatoLabel = document.getElementById('legatoLabel');
 
 
 
@@ -391,10 +432,10 @@
       playStatus.style.height = screenHeight * 0.1 + "px";
 
       // PAGE TWO
-      freqRange.width = screenWidth * 0.42;
+      freqRange.width = screenWidth * 0.39;
       freqRange.height = xyPadSize * 0.7;
 
-      timeChance.width = screenWidth * 0.42;
+      timeChance.width = screenWidth * 0.39;
       timeChance.height = xyPadSize * 0.7;
 
       freqRangeLabel.style.width = screenWidth * 0.42 + "px";
@@ -405,13 +446,18 @@
 
       // PAGE THREE
       scale.style.width = screenWidth * 0.42 + "px";
+      scale.style.height = screenHeight * 0.10 + "px";
       transpose.style.width = screenWidth * 0.42 + "px";
+      transpose.style.height = screenHeight * 0.10 + "px";
+
 
       legatoSlider.width = screenWidth * 0.42;
-      legatoSlider.height = xyPadSize;
+      legatoSlider.height = xyPadSize * 0.7;
 
-      chord.style.width = screenWidth * 0.42 + "px";
-      chord.style.height = screenWidth * 0.42 + "px";
+      legatoLabel.style.width = screenWidth * 0.42 + "px";
+
+      chord.style.width = screenWidth * 0.9 + "px";
+      chord.style.height = screenHeight * 0.1 + "px";
 
 
 
@@ -513,6 +559,9 @@
         page1.style.display = 'none';
         page2.style.display = 'none';
         page3.style.display = 'none';
+        disconnect.style.display = 'none';
+        connect.style.display = 'block';
+        logo.style.display = 'block';
 
         socket.emit('disconnectButton');
 
@@ -651,32 +700,34 @@
       socket.on('page', function(data) {
 
         switch(data) {
-          // case 0:
-          //   startUp.style.display = 'block';
-          //   page1.style.display = 'none';
-          //   page2.style.display = 'none';
-          //   page3.style.display = 'none';
-          //   break;
           case 0:
             startUp.style.display = 'none';
             page1.style.display = 'block';
             page2.style.display = 'none';
             page3.style.display = 'none';
+            connect.style.display = 'none';
+            logo.style.display = 'none';
             break;
           case 1:
             startUp.style.display = 'none';
             page1.style.display = 'none';
             page2.style.display = 'block';
             page3.style.display = 'none';
+            connect.style.display = 'none';
+            logo.style.display = 'none';
+
             break;
           case 2:
             startUp.style.display = 'none';
             page1.style.display = 'none';
             page2.style.display = 'none';
             page3.style.display = 'block'
+            connect.style.display = 'none';
+            logo.style.display = 'none';
 
         };
-        console.log("page " + data)
+        console.log("page " + data);
+        disconnect.style.display = 'block';
 
       })
 
@@ -692,9 +743,11 @@
 
       socket.on('playStatus', function(data) {
         if(data) {
-          playStatus.innerHTML = 'Stop'
+          playStatus.innerHTML = 'Stop';
+          isPlaying = true;
         } else {
-          playStatus.innerHTML = 'Play'
+          playStatus.innerHTML = 'Play';
+          isPlaying = false;
         }
       })
 
@@ -703,6 +756,7 @@
       drawBall(xyPad.width/2,xyPad.height/2,xyPad);
       drawLine(freqRange.height/2,freqRange);
       drawLine(timeChance.height/2, timeChance);
+      drawLine(legatoSlider.height/2, legatoSlider);
 
     </script>
 
