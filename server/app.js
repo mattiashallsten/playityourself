@@ -6,7 +6,7 @@ var path = require('path');
 var server = require('http').createServer(app);
 var io = require('socket.io')(server);
 
-const remote = '127.0.0.1';
+const remote = '10.10.2.186';
 const remotePort = 8000;
 
 var udpPort = new osc.UDPPort({
@@ -272,7 +272,7 @@ io.on('connection', function(client) {
     //     value: data * (-1) + 1
     //   }
     // }, remote, remotePort);
-    sendOSC('/freqRange', data);
+    sendOSC('/freqRange', data * (-1) + 1);
     freqRangeState = data;
   });
 
@@ -285,7 +285,7 @@ io.on('connection', function(client) {
     //   }
     // }, remote, remotePort);
 
-    sendOSC('/timeChance', data);
+    sendOSC('/timeChance', data * (-1) + 1);
 
     console.log('TimeChance: ' + data);
     timeChanceState = data;

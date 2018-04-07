@@ -300,7 +300,7 @@
     <div id="page3" style="display:none">
 
       <p class="instructions">
-        Here you can select what scale and key that the piano is playing. Different keys can yield interesting results due to how the algorithmic sequencer is built.
+        Here you can control scale, root key, legato amount and whether chords are triggered or not.
       </p>
 
       <div id="scaleSelect">
@@ -630,6 +630,7 @@
         var touchPos = getTouchPos(timeChance,evt);
 
         drawLine(touchPos.y,timeChance);
+        console.log(touchPos.y);
         socket.emit('timeChance', touchPos.y/timeChance.height);
         evt.preventDefault();
       });
