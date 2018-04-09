@@ -381,6 +381,6 @@ setInterval(function() {
   if(con.length>3) {
     con = con.slice(3);
   }
-})
+},500)
 
 server.listen(4200);
