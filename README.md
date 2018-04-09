@@ -1,6 +1,6 @@
 # Play it yourself
 
-Node app for sending OSC messages to a Pd-patch, in turn sending MIDI to a Yamaha Disklavier.
+Node app for sending OSC messages to a [Pd-patch](https://github.com/mattiashallsten/playityourself-sequencer), in turn sending MIDI to a Yamaha Disklavier.
 
 ## Requirements
 
