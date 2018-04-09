@@ -26,7 +26,8 @@
 
       #title {
         text-align: center;
-        font-family: Georgia, serif
+        font-family: Georgia, serif;
+        margin: 0
 
       }
 
@@ -83,7 +84,7 @@
 
       #playStatus {
         position: absolute;
-        top: 80%;
+        bottom: 10%;
 
 
         left: 0;
@@ -227,6 +228,7 @@
       .instructions {
         text-align: center;
         font-family: Georgia, serif;
+        font-size: 12px;
         position: absolute;
         top: 10%;
         left: 0;
@@ -268,7 +270,7 @@
     <div id="page1" style="display:none">
       <div>
         <p class="instructions">
-          Press play to start playing. Drag the ball in the yellow square to change pitch and tempo
+          Press play to start playing. Drag the ball in the yellow rectangle to change pitch and tempo
         </p>
       </div>
       <div>
@@ -350,8 +352,6 @@
       </p>
     </div>
 
-    <p id="post"></p>
-
     <script src="/socket.io/socket.io.js"></script>
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
 
@@ -426,8 +426,8 @@
       connect.style.height = screenHeight * 0.1 + "px";
 
       // PAGE ONE
-      xyPad.width = xyPadSize;
-      xyPad.height = xyPadSize;
+      xyPad.width = screenWidth * 0.9;
+      xyPad.height = screenHeight * 0.5;
       playStatus.style.width = screenWidth * 0.9 + "px";
       playStatus.style.height = screenHeight * 0.1 + "px";
 
@@ -702,27 +702,36 @@
 
         switch(data) {
           case 0:
+            // Show page one
             startUp.style.display = 'none';
+
             page1.style.display = 'block';
             page2.style.display = 'none';
             page3.style.display = 'none';
+
             connect.style.display = 'none';
             logo.style.display = 'none';
             break;
           case 1:
+            // Show page 2
             startUp.style.display = 'none';
+
             page1.style.display = 'none';
             page2.style.display = 'block';
             page3.style.display = 'none';
+
             connect.style.display = 'none';
             logo.style.display = 'none';
 
             break;
           case 2:
+            // Show page 3
             startUp.style.display = 'none';
+
             page1.style.display = 'none';
             page2.style.display = 'none';
             page3.style.display = 'block'
+
             connect.style.display = 'none';
             logo.style.display = 'none';
 
