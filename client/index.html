@@ -255,14 +255,15 @@
         When you're done playing, log off either by pressing the red "Disconnect" button or by closing this tab.
       </p>
       <br>
+      <button id="connect">Connect</button>
     </div>
-    <button id="connect">Connect</button>
+
     <img id="logo" src="https://i.imgur.com/QGoRc8d.png">
 
     <!-- Disconnected -->
     <div id="disconnected" style="display:none">
       <p class="instructions">
-        Thank you for playing! To try again, click the "Connect" button again!
+        Thank you for playing! To try again, refresh this page and click the "Connect" button again!
       </p>
     </div>
 
@@ -564,7 +565,6 @@
         page2.style.display = 'none';
         page3.style.display = 'none';
         disconnect.style.display = 'none';
-        connect.style.display = 'block';
         logo.style.display = 'block';
 
         socket.emit('disconnectButton');
