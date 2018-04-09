@@ -6,7 +6,8 @@ var path = require('path');
 var server = require('http').createServer(app);
 var io = require('socket.io')(server);
 
-const remote = '10.10.2.186';
+// IP address and port of the receiver, i.e Raspberry Pi running Pure Data.
+const remote = '10.10.2.202';
 const remotePort = 8000;
 
 var udpPort = new osc.UDPPort({
@@ -16,9 +17,14 @@ var udpPort = new osc.UDPPort({
 });
 
 
+// Array of connected clients.
 var con = [null,null,null];
+
+// A bit misleading. It's false only if clients aren't connected and
+// the sequencer is playing by it self.
 var clientsConnected = true;
 
+// All the paramenters. Is sent to Pd when initialized.
 var scaleState = 1;
 var transposeState = 0;
 var xyPadState = [0.5,0.5];
@@ -33,20 +39,19 @@ udpPort.open();
 
 
 
-app.use(express.static(__dirname + '/node_modulse'));
+app.use(express.static(__dirname + '/node_modules'));
 
 app.get('/', function(req,res,next) {
-
   res.sendFile(path.join(__dirname, '../client/index.html'));
-
-  var clientIP = req.connection.remoteAddress.slice(7);
+  //var clientIP = req.connection.remoteAddress.slice(7);
 });
 
 
 
 
 
-// funkar! måste bara se till så att disconnect funkar som det ska.
+// Function for connecting the clients. Is evaluated when the client presses
+// the "connect" button..
 function connect(ip) {
   for(var i = 0; i < con.length; i++) {
     if(ip == con[i]) {
@@ -91,6 +96,7 @@ function connect(ip) {
   console.log('transpose: ' + transposeState)
 }
 
+// Function for sending OSC messages.
 function sendOSC(address, value) {
   udpPort.send({
     address: address,
@@ -101,6 +107,7 @@ function sendOSC(address, value) {
   }, remote, remotePort)
 }
 
+// An initialize function for when no clients are connected.
 function initialize() {
   var scaleInit;
   var transposeInit;
@@ -135,8 +142,9 @@ function initialize() {
 //   }
 // }
 
-initialize();
+// initialize();
 
+// Wheb the client connects to the server. Receiving IP.
 io.on('connection', function(client) {
   var clientIP = client.client.conn.remoteAddress.slice(7);
   var connected = false;
@@ -151,6 +159,8 @@ io.on('connection', function(client) {
   //console.log(users);
   // console.log(clientIP);
 
+  // If no other clients are connected, send a new random scale and
+  // transposition value.
   if(
     (con[0] == null) &&
     (con[1] == null) &&
@@ -159,37 +169,6 @@ io.on('connection', function(client) {
     scaleState = Math.floor(Math.random() * 3);
     transposeState = Math.floor(Math.random() * 6) * 2;
   }
-
-
-
-
-
-  // sendOSC('/velOn', 1);
-  // sendOSC('/freq', xyPadState[0]);
-  // sendOSC('/time', xyPadState[1]);
-  // sendOSC('/freqRange', freqRangeState);
-  // sendOSC('/timeChance', timeChanceState);
-  // sendOSC('/scale', scaleState);
-  // sendOSC('/transpose', transposeState);
-
-  // if(isPlaying) {
-  //   sendOSC('/onOff', 1);
-  // } else {
-  //   sendOSC('/onOff', 0);
-  //   console.log('connected but not playing')
-  // }
-
-  // if(suspedalState) {
-  //   sendOSC('/suspedal', 1)
-  // } else {
-  //   sendOSC('/suspedal', 0)
-  // }
-  //
-  // if(chordOn) {
-  //   sendOSC('/chord', 1)
-  // } else {
-  //   sendOSC('/chord', 0)
-  // }
 
   client.emit('playStatus', isPlaying)
 
@@ -369,8 +348,11 @@ io.on('connection', function(client) {
 //   }
 // }
 
+
 setTimeout(nobodyPlaying, 10000)
 
+// Every 10 seconds, check if nobody is playing, and if that is the case,
+// start playing with the initialized settings.
 function nobodyPlaying() {
   setInterval(function() {
     if(
@@ -395,6 +377,10 @@ setInterval(function() {
   }
 }, 5000)
 
-
+setInterval(function() {
+  if(con.length>3) {
+    con = con.slice(3);
+  }
+})
 
 server.listen(4200);

@@ -233,7 +233,7 @@
         top: 10%;
         left: 0;
         right: 0;
-        margin: 10px
+        margin: 2px
 
       }
 
@@ -412,6 +412,8 @@
 
 
 
+      // Setting all the element sizes through JavaScript rather than CSS,
+      // in order to get the actual sizes when for example drawing on a canvas.
       if(screenWidth > screenHeight) {
         xyPadSize = screenHeight * 0.9;
       } else {
@@ -467,10 +469,10 @@
 
 
 
-      socket.on('id', function(data) {
-        console.log(data);
-        title.innerHTML = data
-      })
+      // socket.on('id', function(data) {
+      //   console.log(data);
+      //   title.innerHTML = data
+      // })
 
       socket.on('sorry', function() {
         sorry.style.display = 'block';
@@ -478,6 +480,7 @@
         page2.style.display = 'none';
         page3.style.display = 'none';
         startUp.style.display = 'none';
+        disconnectButton.style.display = 'none';
       })
 
       connect.addEventListener('click', function() {
@@ -519,6 +522,7 @@
         page3.style.display = 'none';
       })
 
+      // Function for checking what value is selected in a <select>-element.
       function selectItemByValue(elmnt, value){
 
         for(var i=0; i < elmnt.options.length; i++)
