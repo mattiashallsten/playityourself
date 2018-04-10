@@ -32,7 +32,7 @@ var freqRangeState = 0.5;
 var timeChanceState = 0.5;
 var isPlaying = false;
 var suspedalState = false;
-var chordOn = false;
+var chordOn = true;
 var legatoState = 0.5;
 
 udpPort.open();
