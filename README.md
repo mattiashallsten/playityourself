@@ -26,17 +26,4 @@ server.listen(4200)
 
 ### TODO
 
-- ~~Index the active clients, limit it to three users~~
-- ~~Add start screen, with a button saying "Connect"~~
-- ~~Fix the CSS styling so that JavaScript understands the size of a canvas using the .getBoundingClientRect() method~~
-- ~~Add legato slider~~
-- ~~Add label to legato slider~~
-- ~~Fix legato slider size~~
-- ~~Add chord box~~
-- ~~Add "disconnect" button~~
-- Add timer to look for inactivity, logging off inactive clients
-  - It does it automatically!
-- ~~Add randomization to scale and transpose values~~
-- ~~Change color of sliders, buttons and xy-pad~~
-- ~~Add function to listen for no clients connected~~
-- ~~Add initialize function~~
+- Fix bug: sometimes the array containing the IP's of connected clients exceeds the size of three, and adds a fourth element containing "undefined: null". 
