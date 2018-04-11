@@ -344,13 +344,13 @@ io.on('connection', function(client) {
   client.on('disconnect', function() {
     for(var i = 0; i < con.length; i++) {
       if(con[i] == clientIP) {
-        con[i] = null
+        con[i] = null;
+        logToFile('Automatic disconnect');
       }
     };
 
     console.log(con);
     logToFile('Connected clients: ' + con);
-    logToFile('Automatic disconnect');
   })
 
 
