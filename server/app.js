@@ -6,6 +6,16 @@ var path = require('path');
 var server = require('http').createServer(app);
 var io = require('socket.io')(server);
 
+var startDate = new Date();
+var fs = require('fs');
+var util = require('util');
+var log_file = fs.createWriteStream(path.join(__dirname,'../log/', startDate.toString()) + '.txt', {flags : 'w'});
+
+function logToFile(d) {
+  var date = new Date();
+  log_file.write(util.format(date + " " + d) + '\n')
+}
+
 // IP address and port of the receiver, i.e Raspberry Pi running Pure Data.
 const remote = '10.10.2.202';
 const remotePort = 8000;
@@ -186,19 +196,21 @@ io.on('connection', function(client) {
     var i;
     console.log('connect');
     connect(clientIP);
-    for(i = 0; i < con.length + 1; i++) {
+    for(i = 0; i < 4; i++) {
       if(clientIP == con[i]) {
         id = i;
         break;
-      } else if (i > con.length) {
+      } else if (i == 3) {
         client.emit('sorry')
       }
     };
     client.emit('page', id);
+    logToFile('Connected clients: ' + con);
   });
 
   client.on('disconnectButton', function() {
     con[id] = null;
+    logToFile('Connected clients: ' + con);
   })
 
   client.on('xPos', function(data) {
@@ -336,6 +348,7 @@ io.on('connection', function(client) {
     };
 
     console.log(con);
+    logToFile('Connected clients: ' + con);
   })
 
 
