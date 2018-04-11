@@ -211,6 +211,7 @@ io.on('connection', function(client) {
   client.on('disconnectButton', function() {
     con[id] = null;
     logToFile('Connected clients: ' + con);
+    logToFile('Disconnected via button')
   })
 
   client.on('xPos', function(data) {
@@ -349,6 +350,7 @@ io.on('connection', function(client) {
 
     console.log(con);
     logToFile('Connected clients: ' + con);
+    logToFile('Automatic disconnect');
   })
 
 
