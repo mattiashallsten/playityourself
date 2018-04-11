@@ -168,6 +168,10 @@ io.on('connection', function(client) {
   ) {
     scaleState = Math.floor(Math.random() * 3);
     transposeState = Math.floor(Math.random() * 6) * 2;
+    freqRangeState = 0.5;
+    timeChanceState = 0.5;
+    suspedalState = 0;
+    chordOn = true;
   }
 
   client.emit('playStatus', isPlaying)
