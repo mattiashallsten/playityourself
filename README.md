@@ -26,4 +26,4 @@ server.listen(4200)
 
 ### TODO
 
-- Fix bug: sometimes the array containing the IP's of connected clients exceeds the size of three, and adds a fourth element containing "undefined: null". 
+- Fix bug: sometimes the array containing the IP's of connected clients exceeds the size of three, and adds a fourth element containing `undefined: null`. 
