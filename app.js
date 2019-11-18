@@ -9,7 +9,7 @@ var io = require('socket.io')(server);
 var startDate = new Date();
 var fs = require('fs');
 var util = require('util');
-var log_file = fs.createWriteStream(path.join(__dirname,'../log/', startDate.toString()) + '.txt', {flags : 'w'});
+var log_file = fs.createWriteStream(path.join(__dirname,'log/', startDate.toString()) + '.txt', {flags : 'w'});
 
 function logToFile(d) {
     var date = new Date();
