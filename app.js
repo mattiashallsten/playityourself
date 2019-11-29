@@ -317,49 +317,62 @@ function nobodyPlaying() {
 	}
     }, 10000);
 }
-
 /* ---------- MASTER FUNCTION ---------- */
 /*
-1. Ask for the target ip
-2. Ask for the target port
-3. Run the timeout and interval functions
-4. Listen for port 4200
+1. Present a greeting
+2. Ask for the target ip
+3. Ask for the target port
+4. Run the timeout and interval functions
+5. Listen for port 4200
 */
-// Asking for the IP address and Port number of the OSC receiver, and then starting the server
-rl.question('IP address of OSC receiver: (defaults to localhost)\n', (answer) => {
-    if(answer.length == 0) {
-	remote = '127.0.0.1';
-    } else {
-	remote = answer;
-    };
 
-    rl.question('Port of the OSC receiver: (defaults to 8000)\n', (answer) => {
+// Asking for the IP address and Port number of the OSC receiver, and then starting the server
+fs.readFile('greeting.txt', 'utf8', function(err, data) {
+    console.log(data);
+
+    rl.question('IP address of OSC receiver: (defaults to localhost)\n', (answer) => {
 	if(answer.length == 0) {
-	    remotePort = 8000;
+	    remote = '127.0.0.1';
 	} else {
-	    remotePort = Number(answer);
+	    remote = answer;
 	};
 
-	setTimeout(nobodyPlaying, 10000);
-
-	// Every 10 seconds, check if nobody is playing, and if that is the case,
-	// start playing with the initialized settings.
-	setInterval(function() {
-	    console.log(con);
-	    if(clientsConnected) {
-		console.log('Clients connected!');
+	rl.question('Port of the OSC receiver: (defaults to 8000)\n', (answer) => {
+	    if(answer.length == 0) {
+		remotePort = 8000;
 	    } else {
-		console.log('No clients connected!');
-	    }
-	}, 5000);
+		remotePort = Number(answer);
+	    };
 
-	// Cleaning up the connected array
-	setInterval(function() {
-	    if(con.length>3) {
-		con = con.slice(3);
-	    }
-	},500);
+	    var responseText = "--------------------\n" + "IP: \t" + remote + "\nPort: \t" + remotePort.toString() + "\n--------------------";
 
-	server.listen(4200);
-    });  
+	    console.log(responseText);
+	    
+	    setTimeout(nobodyPlaying, 10000);
+
+	    // Every 10 seconds, check if nobody is playing, and if that is the case,
+	    // start playing with the initialized settings.
+	    setInterval(function() {
+		console.log(con);
+		if(clientsConnected) {
+		    console.log('Clients connected!');
+		} else {
+		    console.log('No clients connected!');
+		}
+	    }, 5000);
+
+	    // Cleaning up the connected array
+	    setInterval(function() {
+		if(con.length>3) {
+		    con = con.slice(3);
+		}
+	    },500);
+
+	    server.listen(4200);
+	});  
+    });
+
 });
+
+
+
