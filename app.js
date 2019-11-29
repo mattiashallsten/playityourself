@@ -1,16 +1,36 @@
+/*
+Play it yourself
+Mattias Hållsten 2018-2019
+
+To be presented at KMH December 5-7 2019
+*/
+
+
+// Require packages:
+
+// OSC communication to Raspberry Pi
 var osc = require ('osc');
+// Express is used to create a http server
 var express = require('express');
 var app = express();
+// For easier path managing
 var path = require('path');
 
+// Use http server package
 var server = require('http').createServer(app);
+// socket.io is used for communication between server and client
 var io = require('socket.io')(server);
 
+// Readline is a stdin/out wrapper
+var readline = require('readline');
+
+// Date, fs and util -- used to writing a log file
 var startDate = new Date();
 var fs = require('fs');
 var util = require('util');
 var log_file = fs.createWriteStream(path.join(__dirname,'log/', startDate.toString()) + '.txt', {flags : 'w'});
 
+// Function to log users to a file
 function logToFile(d) {
     var date = new Date();
     log_file.write(util.format(date + " " + d) + '\n');
@@ -18,15 +38,21 @@ function logToFile(d) {
 
 // IP address and port of the receiver, i.e Raspberry Pi running Pure Data.
 //const remote = '10.10.2.202';
-const remote = '127.0.01';
-const remotePort = 8000;
+var remote = '127.0.0.1';
+var remotePort = 8000;
 
+// The port of which is used for RPi communication
 var udpPort = new osc.UDPPort({
     localAddress: '0.0.0.0',
     localPort: 5500,
     metadata: true
 });
 
+// Interface for readline
+const rl = readline.createInterface({
+  input: process.stdin,
+  output: process.stdout
+});
 
 // Array of connected clients.
 var con = [null,null,null];
@@ -48,8 +74,7 @@ var legatoState = 0.5;
 
 udpPort.open();
 
-
-
+// The directories to send to the client
 app.use(express.static(__dirname + '/node_modules'));
 app.use(express.static(__dirname + '/public'));
 
@@ -134,33 +159,12 @@ function initialize() {
 
     sendOSC('/velOn', 0);
 }
-//
-// function getId(ip,client) {
-//   for(var i = 0; i < con.length; i++) {
-//     if(ip == con[i]) {
-//       id = i;
-//       client.emit('id', id);
-//       break;
-//     }
-//   }
-// }
 
-// initialize();
-
-// Wheb the client connects to the server. Receiving IP.
+// When the client connects to the server. Receiving IP.
 io.on('connection', function(client) {
     var clientIP = client.client.conn.remoteAddress.slice(7);
     var connected = false;
     var id;
-
-
-
-
-    // initialize();
-
-    // console.log('Connection!');
-    //console.log(users);
-    // console.log(clientIP);
 
     // If no other clients are connected, send a new random scale and
     // transposition value.
@@ -208,39 +212,18 @@ io.on('connection', function(client) {
     });
 
     client.on('xPos', function(data) {
-	// udpPort.send({
-	//   address: '/freq',
-	//   args: {
-	//     type: 'f',
-	//     value: data
-	//   }
-	// }, remote, remotePort);
 	sendOSC('/freq', data);
 	console.log('xpos: ' + data);
 	xyPadState[0] = data;
     });
 
     client.on('yPos', function(data) {
-	// udpPort.send({
-	//   address: '/time',
-	//   args: {
-	//     type: 'f',
-	//     value: data
-	//   }
-	// }, remote, remotePort);
 	sendOSC('/time', data);
 	console.log('ypos: ' + data);
 	xyPadState[1] = data;
     });
 
     client.on('onOff', function(data) {
-	// udpPort.send({
-	//   address: '/onOff',
-	//   args: {
-	//     type: 'i',
-	//     value: data
-	//   }
-	// }, remote, remotePort);
 	sendOSC('/onOff', data);
 	if(data == 1) {
 	    console.log('Playing!');
@@ -254,26 +237,11 @@ io.on('connection', function(client) {
     });
 
     client.on('freqRange', function(data) {
-	// udpPort.send({
-	//   address: '/freqRange',
-	//   args: {
-	//     type: 'f',
-	//     value: data * (-1) + 1
-	//   }
-	// }, remote, remotePort);
 	sendOSC('/freqRange', data * (-1) + 1);
 	freqRangeState = data;
     });
 
     client.on('timeChance', function(data) {
-	// udpPort.send({
-	//   address: '/timeChance',
-	//   args: {
-	//     type: 'f',
-	//     value: data * (-1) + 1
-	//   }
-	// }, remote, remotePort);
-
 	sendOSC('/timeChance', data * (-1) + 1);
 
 	console.log('TimeChance: ' + data);
@@ -292,25 +260,11 @@ io.on('connection', function(client) {
 
     client.on('scale', function(data) {
 	console.log('Scale: ' + data);
-	// udpPort.send({
-	//   address: '/scale',
-	//   args: {
-	//     type: 'i',
-	//     value: data
-	//   }
-	// }, remote, remotePort);
 	sendOSC('/scale', data);
-	scaleState = data
+	scaleState = data;
     });
 
     client.on('transpose', function(data) {
-	// udpPort.send({
-	//   address: '/transpose',
-	//   args: {
-	//     type: 'i',
-	//     value: data
-	//   }
-	// }, remote, remotePort)
 	sendOSC('/transpose', data);
 	console.log(data);
 	transposeState = data;
@@ -331,7 +285,7 @@ io.on('connection', function(client) {
     });
 
     client.on('size', function(data) {
-	console.log(data)
+	console.log(data);
     });
 
     client.on('disconnect', function() {
@@ -349,22 +303,6 @@ io.on('connection', function(client) {
 
 });
 
-
-// function allDisconnected() {
-//   if(
-//     (con[0] = null) &&
-//     (con[1] = null) &&
-//     (con[2] = null)
-//   ) {
-//     initialize()
-//   }
-// }
-
-
-setTimeout(nobodyPlaying, 10000);
-
-// Every 10 seconds, check if nobody is playing, and if that is the case,
-// start playing with the initialized settings.
 function nobodyPlaying() {
     setInterval(function() {
 	if(
@@ -380,19 +318,48 @@ function nobodyPlaying() {
     }, 10000);
 }
 
-setInterval(function() {
-    console.log(con);
-    if(clientsConnected) {
-	console.log('Clients connected!');
+/* ---------- MASTER FUNCTION ---------- */
+/*
+1. Ask for the target ip
+2. Ask for the target port
+3. Run the timeout and interval functions
+4. Listen for port 4200
+*/
+// Asking for the IP address and Port number of the OSC receiver, and then starting the server
+rl.question('IP address of OSC receiver: (defaults to localhost)\n', (answer) => {
+    if(answer.length == 0) {
+	remote = '127.0.0.1';
     } else {
-	console.log('No clients connected!');
-    }
-}, 5000);
+	remote = answer;
+    };
 
-setInterval(function() {
-    if(con.length>3) {
-	con = con.slice(3);
-    }
-},500)
+    rl.question('Port of the OSC receiver: (defaults to 8000)\n', (answer) => {
+	if(answer.length == 0) {
+	    remotePort = 8000;
+	} else {
+	    remotePort = Number(answer);
+	};
 
-server.listen(4200);
+	setTimeout(nobodyPlaying, 10000);
+
+	// Every 10 seconds, check if nobody is playing, and if that is the case,
+	// start playing with the initialized settings.
+	setInterval(function() {
+	    console.log(con);
+	    if(clientsConnected) {
+		console.log('Clients connected!');
+	    } else {
+		console.log('No clients connected!');
+	    }
+	}, 5000);
+
+	// Cleaning up the connected array
+	setInterval(function() {
+	    if(con.length>3) {
+		con = con.slice(3);
+	    }
+	},500);
+
+	server.listen(4200);
+    });  
+});
