@@ -290,11 +290,11 @@ timeChance.addEventListener('touchmove', function(evt) {
 
 suspedal.addEventListener('click', function() {
     if(sustainpedal) {
-        suspedal.innerHTML = 'Sustain pedal on';
+        suspedal.innerHTML = 'Click here to turn on the sustain pedal!';
         socket.emit('sustain', 0);
         sustainpedal = false;
     } else {
-        suspedal.innerHTML = 'Sustain pedal off';
+        suspedal.innerHTML = 'Click here to turn off the sustain pedal!';
         socket.emit('sustain', 1);
         sustainpedal = true
     }
@@ -334,11 +334,11 @@ legatoSlider.addEventListener('touchmove', function(evt) {
 chord.addEventListener('click', function() {
     if(chordOn) {
         chordOn = false;
-        chord.innerHTML = 'Chord on';
+        chord.innerHTML = 'Click here to turn on chords!';
         socket.emit('chord', 0)
     } else {
         chordOn = true;
-        chord.innerHTML = 'Chord off';
+        chord.innerHTML = 'Click here to turn off chords!';
         socket.emit('chord', 1)
     }
 })
