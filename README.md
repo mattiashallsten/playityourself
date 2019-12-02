@@ -16,7 +16,7 @@ Today, modern [Disklaviers](https://www.youtube.com/watch?v=h8La94sbUC0) and equ
 
 The rather uncanny experience of believing that a ghost is playing the piano, combined with the upright piano being one of the pinnacles in terms of music played by amateurs (again, piano-playing daughters were not encouraged to persue a professional career) has been the central topics of exploration for this installation. 
 
-The music is here played by an algorithm rather then written beforehand, and controlled by the visitor. The visitor then takes on the role of both composer, performer and listener. The visitor can, rather than only hearing their favourite piece of music, _interact_ with the piano. The installation also mimics and expands upon the four-hand piano form -- in _Play it Yourself_, the details of the piano-playing algorithm are further discovered as more people collaborate on the performing-of and the listening-to the musical material.
+The music is here played by an algorithm rather then written beforehand, and controlled by the visitor. The visitor can interact with the piano, and takes on the role of both composer, performer and listener. The installation also mimics and expands upon the four-hand piano form -- in _Play it Yourself_, the details of the piano-playing algorithm are further discovered as more people collaborate on the performing-of and the listening-to the musical material.
 
 ## Techicalities
 
